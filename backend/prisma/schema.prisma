@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = env("DATABASE_URL")
+}
+
+enum TransactionType {
+    expense
+    income
+}
+
+enum IconName {
+    briefcase
+    car
+    heart
+    piggy
+    cart
+    ticket
+    tool
+    food
+    pet
+    home
+    gift
+    gym
+    book
+    baggage
+    mail
+    receipt
+}
+
+enum CategoryColor {
+    blue
+    red
+    green
+    purple
+    pink
+    yellow
+    orange
+}
+
+model User {
+    id        String   @id @default(uuid())
+    name      String
+    email     String   @unique
+    password  String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    transactions Transaction[]
+    category     Category[]
+}
+
+model Transaction {
+    id          String          @id @default(uuid())
+    description String
+    amount      Int
+    type        TransactionType
+    date        DateTime
+    createdAt   DateTime        @default(now())
+    updatedAt   DateTime        @updatedAt
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    categoryId String
+    category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+    id          String        @id @default(uuid())
+    title       String        @unique
+    description String?
+    color       CategoryColor
+    icon        IconName
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
+
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    transactions Transaction[]
+}
