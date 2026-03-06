@@ -18,27 +18,69 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
+type FieldErrors = {
+	email?: string;
+	password?: string;
+};
+
+const getLabelColor = (focused: boolean, hasError: boolean): string => {
+	if (hasError) return "text-danger";
+	if (focused) return "text-brand-base";
+	return "text-gray-700";
+};
+
+const getIconColor = (
+	value: string,
+	focused: boolean,
+	hasError: boolean,
+): string => {
+	if (hasError) return "text-danger";
+	if (focused) return "text-brand-base";
+	if (value) return "text-gray-700";
+	return "text-gray-400";
+};
+
 export const Login = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 	const [rememberMe, setRememberMe] = useState(false);
+
+	const [emailFocused, setEmailFocused] = useState(false);
+	const [passwordFocused, setPasswordFocused] = useState(false);
+	const [errors, setErrors] = useState<FieldErrors>({});
+
 	const login = useAuthStore((state) => state.login);
 
+	const emailLabelColor = getLabelColor(emailFocused, !!errors.email);
+	const emailIconColor = getIconColor(email, emailFocused, !!errors.email);
+
+	const passwordLabelColor = getLabelColor(
+		passwordFocused,
+		!!errors.password,
+	);
+	const passwordIconColor = getIconColor(
+		password,
+		passwordFocused,
+		!!errors.password,
+	);
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setLoading(true);
+		setErrors({});
 
 		try {
-			const loginMutate = await login({
-				email,
-				password,
-			});
+			const loginMutate = await login({ email, password });
 			if (loginMutate) {
 				toast.success("Login realizado com sucesso!");
 			}
 		} catch (error: unknown) {
+			console.error(error);
+			setErrors({
+				email: "Credenciais inválidas",
+				password: "Credenciais inválidas",
+			});
 			toast.error("Falha ao realizar o login!");
 		} finally {
 			setLoading(false);
@@ -60,37 +102,65 @@ export const Login = () => {
 				<CardContent>
 					<form onSubmit={handleSubmit} className="space-y-4">
 						<div>
-							<Label htmlFor="email" className="text-gray-700">
+							<Label htmlFor="email" className={emailLabelColor}>
 								E-mail
 							</Label>
 							<div className="flex items-center border border-gray-300 rounded-md px-3">
-								<Mail className="h-4 w-4 text-muted-foreground mr-2 text-gray-400" />
+								<Mail
+									className={`h-4 w-4 mr-2 ${emailIconColor}`}
+								/>
 								<Input
 									id="email"
 									type="email"
 									placeholder="mail@exemplo.com"
-									className="text-gray-400 border-none focus-visible:ring-0"
+									className="text-gray-700 placeholder:text-gray-400 border-none focus-visible:ring-0"
 									value={email}
-									onChange={(e) => setEmail(e.target.value)}
+									onChange={(e) => {
+										setEmail(e.target.value);
+										if (errors.email)
+											setErrors((prev) => ({
+												...prev,
+												email: undefined,
+											}));
+									}}
+									onFocus={() => setEmailFocused(true)}
+									onBlur={() => setEmailFocused(false)}
 									required
 								/>
 							</div>
+							{errors.email && (
+								<p className="text-xs text-danger mt-1">
+									{errors.email}
+								</p>
+							)}
 						</div>
 						<div>
-							<Label htmlFor="password" className="text-gray-700">
+							<Label
+								htmlFor="password"
+								className={passwordLabelColor}
+							>
 								Senha
 							</Label>
 							<div className="flex items-center border border-gray-300 rounded-md px-3">
-								<Lock className="h-4 w-4 text-muted-foreground mr-2 text-gray-400" />
+								<Lock
+									className={`h-4 w-4 mr-2 ${passwordIconColor}`}
+								/>
 								<Input
 									id="password"
 									type={showPassword ? "text" : "password"}
 									placeholder="Digite sua senha"
-									className="text-gray-400 border-none focus-visible:ring-0"
+									className="text-gray-700 placeholder:text-gray-400 border-none focus-visible:ring-0"
 									value={password}
-									onChange={(e) =>
-										setPassword(e.target.value)
-									}
+									onChange={(e) => {
+										setPassword(e.target.value);
+										if (errors.password)
+											setErrors((prev) => ({
+												...prev,
+												password: undefined,
+											}));
+									}}
+									onFocus={() => setPasswordFocused(true)}
+									onBlur={() => setPasswordFocused(false)}
 									required
 								/>
 								<button
@@ -107,6 +177,11 @@ export const Login = () => {
 									)}
 								</button>
 							</div>
+							{errors.password && (
+								<p className="text-xs text-danger mt-1">
+									{errors.password}
+								</p>
+							)}
 						</div>
 						<div className="flex items-center justify-between text-sm">
 							<div className="flex items-center space-x-2 text-gray-700">
@@ -120,7 +195,6 @@ export const Login = () => {
 								/>
 								Lembrar-me
 							</div>
-
 							<Link
 								to="/forgot-password"
 								className="text-brand-base hover:underline"
@@ -138,7 +212,6 @@ export const Login = () => {
 						</Button>
 					</form>
 				</CardContent>
-
 				<div className="flex items-center w-full max-w-md gap-3 pb-3">
 					<Separator className="flex-1 bg-gray-300" />
 					<span className="text-sm text-muted-foreground text-gray-500">
@@ -146,13 +219,12 @@ export const Login = () => {
 					</span>
 					<Separator className="flex-1 bg-gray-300" />
 				</div>
-
 				<CardFooter className="w-full flex flex-col gap-3">
 					<p className="text-gray-600">Ainda não tem uma conta</p>
 					<Button variant="outline" className="w-full py-3" asChild>
 						<Link to="/signup">
 							<UserRoundPlus />
-							Criar conta{" "}
+							Criar conta
 						</Link>
 					</Button>
 				</CardFooter>

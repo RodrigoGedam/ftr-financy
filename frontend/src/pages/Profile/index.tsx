@@ -107,11 +107,12 @@ export const Profile = () => {
 									<UserIcon className="h-4 w-4 text-muted-foreground mr-2 text-black" />
 									<Input
 										id="nome"
+										value={name}
 										placeholder={user?.name}
 										onChange={(e) =>
 											setName(e.target.value)
 										}
-										className="placeholder:text-gray-800 border-none focus-visible:ring-0"
+										className="text-gray-800 placeholder:text-gray-400 border-none focus-visible:ring-0"
 									/>
 								</div>
 							</div>

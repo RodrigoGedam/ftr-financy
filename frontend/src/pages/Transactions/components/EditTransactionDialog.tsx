@@ -179,7 +179,7 @@ export const EditTransactionDialog = ({
 						<Input
 							value={description}
 							onChange={(e) => setDescription(e.target.value)}
-							className="text-gray-400 border border-rounded border-gray-300 mt-1"
+							className="text-gray-700 placeholder:text-gray-300 border border-rounded border-gray-300 mt-1"
 							placeholder="Ex. Almoço no restaurante"
 						/>
 					</div>

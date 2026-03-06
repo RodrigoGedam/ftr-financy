@@ -99,13 +99,14 @@ export const TransactionsTable = ({
 
 								<Pagination className="flex justify-end">
 									<PaginationContent>
-										<PaginationItem className="bg-white border border-gray-300 rounded-lg">
+										<PaginationItem>
 											<PaginationPrevious
 												onClick={() =>
 													setCurrentPage((prev) =>
 														Math.max(prev - 1, 1),
 													)
 												}
+												className="bg-white border border-gray-300 rounded-lg hover:bg-gray-200"
 											/>
 										</PaginationItem>
 
@@ -123,7 +124,12 @@ export const TransactionsTable = ({
 																index + 1,
 															)
 														}
-														className="data-[active=true]:bg-green-base"
+														className={`border border-gray-300 rounded-lg hover:bg-gray-200 ${
+															currentPage ===
+															index + 1
+																? "bg-brand-base text-white hover:bg-brand-dark"
+																: "bg-white"
+														}`}
 													>
 														{index + 1}
 													</PaginationLink>
@@ -131,7 +137,7 @@ export const TransactionsTable = ({
 											),
 										)}
 
-										<PaginationItem className="bg-white border border-gray-300 rounded-lg">
+										<PaginationItem>
 											<PaginationNext
 												onClick={() =>
 													setCurrentPage((prev) =>
@@ -141,6 +147,7 @@ export const TransactionsTable = ({
 														),
 													)
 												}
+												className="bg-white border border-gray-300 rounded-lg hover:bg-gray-200"
 											/>
 										</PaginationItem>
 									</PaginationContent>

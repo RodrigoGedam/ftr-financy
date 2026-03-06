@@ -14,7 +14,7 @@ const buttonVariants = cva(
 				outline:
 					"bg-white border border-gray-300 text-gray-700 hover:bg-gray-200 shadow-none",
 				brand: "bg-brand-base text-white hover:bg-brand-dark shadow-none",
-				ghost: "bg-white border border-gray-300",
+				ghost: "bg-white border border-gray-300 hover:bg-gray-200",
 				link: "bg-white border-none",
 			},
 			size: {
